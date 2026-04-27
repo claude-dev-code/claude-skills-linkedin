@@ -1,9 +1,11 @@
-# LinkupAPI — Claude Skills
+# Claude Skills for LinkedIn
 
 > **Connect your AI Agent to B2B Channels.**
-> [LinkupAPI](https://app.linkupapi.com) is a unified API that lets agents act on the channels where B2B revenue actually happens. Today: full LinkedIn coverage (outbound, engagement, content, recruiter, enrichment, webhooks). More channels are landing on the same action-based interface.
+> Powered by [LinkupAPI](https://app.linkupapi.com) — a unified API that lets agents act on the channels where B2B revenue actually happens. Today: full LinkedIn coverage (outbound, engagement, content, recruiter, enrichment, webhooks). More channels are landing on the same action-based interface.
 
-This repo packages 4 Claude Code skills that turn LinkupAPI's capabilities into ready-to-run, auditable workflows. They're the fastest way to put an AI agent on a real LinkedIn account without writing glue code.
+This repo is the official bundle of **Claude skills for LinkedIn**: 4 ready-to-run, auditable Claude Code workflows that turn LinkupAPI's capabilities into safe, rate-limit-aware automation. The fastest way to put an AI agent on a real LinkedIn account without writing glue code.
+
+**Keywords**: claude skills for linkedin · claude code linkedin · linkedin automation claude · claude agent linkedin · linkupapi mcp · linkedin outreach AI agent.
 
 ## Skills
 
