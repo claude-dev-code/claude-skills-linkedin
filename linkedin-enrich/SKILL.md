@@ -7,9 +7,14 @@ description: Enrich a list of LinkedIn profile URLs — get full profile info (c
 
 Given N LinkedIn profile URLs, this skill returns enriched data: current role, company, location, experience timeline, skills, and email when findable. Output as a markdown table, CSV, or JSON.
 
-## Required prerequisites
-1. `linkupapi` MCP connected with at least one LinkedIn account (status `connected`).
-2. A list of LinkedIn URLs from the user (inline, file path, or copy-paste).
+## Required prerequisites — check before you start
+
+1. **`linkupapi` MCP connected.** Verify with `linkupapi_list_accounts`.
+   - If the list is **empty**, tell the user they have two options to connect a LinkedIn account, then stop and wait:
+     - **Hosted UI** — open https://app.linkupapi.com/account-connection (fastest, handles checkpoints in-browser).
+     - **MCP login** — run `linkupapi_login` directly (platform=linkedin, with email+password OR a `login_token`). On `checkpoint_required` → run `linkupapi_checkpoint`.
+2. **Pick the sending account** before Stage 1. After confirming at least one `status = connected` account exists, present the connected accounts via `AskUserQuestion` (single-select). Each option label is the account display name; description shows email + country. The chosen `account_id` is used for the `linkedin_profiles get` calls in Stage 2 (which consume the 100 profile gets / day cap on that account). The `linkupapi_enrich` actions (`find_email`, `validate_email`) don't require an `account_id` — they use LinkUp's managed pipeline.
+3. A list of LinkedIn URLs from the user (inline, file path, or copy-paste).
 
 ## Daily LinkedIn safety caps (MANDATORY — enforced)
 
