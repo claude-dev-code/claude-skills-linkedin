@@ -9,8 +9,7 @@ Given N LinkedIn profile URLs, this skill returns enriched data: current role, c
 
 ## Required prerequisites
 1. `linkupapi` MCP connected with at least one LinkedIn account (status `connected`).
-2. Credits ≥ `2 × number_of_urls` (1 credit per profile + 1 per email lookup, plus optional validation).
-3. A list of LinkedIn URLs from the user (inline, file path, or copy-paste).
+2. A list of LinkedIn URLs from the user (inline, file path, or copy-paste).
 
 ## Daily LinkedIn safety caps (MANDATORY — enforced)
 
@@ -29,8 +28,8 @@ If `linkupapi_get_logs` is unavailable, fall back to scanning today's `./campaig
 1. **URL source**:
    - Paste list inline (one URL per line)
    - Path to a file (`.csv` / `.txt` / `.md` — agent reads via `Read`)
-2. **Email enrichment**: yes / no (each adds 1 credit per profile, plus validation if enabled)
-3. **Validate emails**: yes / no (recommended yes for paid lists; +1 credit per validated email)
+2. **Email enrichment**: yes / no
+3. **Validate emails**: yes / no (recommended yes for paid lists)
 4. **Output format**:
    - Markdown table inline (default for ≤50 URLs — readable in chat)
    - CSV file → `./enrichments/{date}-{slug}.csv`
@@ -40,7 +39,7 @@ If `linkupapi_get_logs` is unavailable, fall back to scanning today's `./campaig
    - Optional: industry, full experience timeline, skills, education, profile_picture_url
    - If email enabled: email, validation status
 
-Echo the plan with credit + budget math:
+Echo the plan with daily-cap math:
 ```
 URLs provided:           50
 URLs after dedupe:       47
@@ -48,7 +47,6 @@ Profile budget today:    100 used / 100 cap → 0 remaining 🚫 STOP
                                   OR
 Profile budget today:    20 used / 80 remaining → enrich up to 47 ✓
 
-Estimated credits:       47 (profiles) + 47 (emails) + 47 (validate) = 141
 Output format:           CSV → ./enrichments/2026-04-27-leads-batch-1.csv
 ```
 
@@ -96,9 +94,9 @@ Tool: `linkupapi_enrich` action `find_email`.
 }}
 ```
 
-Cost: 1 credit per call. No LinkedIn-side cap (it's not a LinkedIn API call), but enforce sane volume — stop if more than 200 in a single run unless user explicitly approves.
+No LinkedIn-side cap (it's not a LinkedIn API call), but enforce sane volume — stop if more than 200 in a single run unless user explicitly approves.
 
-For each profile that returns an email, run `linkupapi_enrich validate_email` if user opted in (catches typos and dead inboxes). 1 credit each. Skip validation on profiles where `find_email` returned nothing.
+For each profile that returns an email, run `linkupapi_enrich validate_email` if user opted in (catches typos and dead inboxes). Skip validation on profiles where `find_email` returned nothing.
 
 ## Stage 4 — Output
 
@@ -150,11 +148,10 @@ This is the single biggest cost saver — repeat enrichments are a waste.
 
 ## Tool quick reference
 
-| Tool | Action | Cost | Daily cap |
-|---|---|---|---|
-| `linkedin_profiles` | `get` | 1 | **100/day shared** |
-| `linkupapi_enrich` | `find_email` | 1 | — |
-| `linkupapi_enrich` | `validate_email` | 1 | — |
-| `linkupapi_enrich` | `reverse_email` | 1 | (not used here) |
-| `linkupapi_get_logs` | — | 0 | run at Stage 0 |
-| `linkupapi_get_credits` | — | 0 | balance check |
+| Tool | Action | Daily cap |
+|---|---|---|
+| `linkedin_profiles` | `get` | **100/day shared** |
+| `linkupapi_enrich` | `find_email` | — |
+| `linkupapi_enrich` | `validate_email` | — |
+| `linkupapi_enrich` | `reverse_email` | (not used here) |
+| `linkupapi_get_logs` | — | run at Stage 0 |

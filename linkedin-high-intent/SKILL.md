@@ -9,8 +9,7 @@ The premise: people who comment or react on a relevant post are 5-10× more like
 
 ## Required prerequisites
 1. `linkupapi` MCP connected with at least one LinkedIn account (status `connected`). Verify with `linkupapi_list_accounts`.
-2. Credit balance ≥ 50 (typical run = 30-50 credits).
-3. A LinkedIn post URL the user wants to mine.
+2. A LinkedIn post URL the user wants to mine.
 
 ## Daily LinkedIn safety caps (MANDATORY — enforced before any tool call)
 
@@ -41,7 +40,7 @@ Use `AskUserQuestion` (single batched form):
 4. **Volume cap** — max invites this run. **Hard ceiling = today's remaining 20-invite budget**. Default = `min(10, remaining_invites)`.
 5. **Note style** — same options as `linkedin-outreach`: no note / personalized / custom. Recommended here: personalized note referencing the post (accept rate is much higher when you reference the engagement).
 
-Echo the brief with budget math:
+Echo the brief with daily-cap math:
 ```
 Post:                {url}
 ICP:                 {summary}
@@ -49,7 +48,6 @@ Engagement:          commenters + reactors
 Volume cap:          10 (today: 8 invites used / 12 remaining)
 Profile budget:      45 used / 55 remaining today
 Note style:          short personalized
-Est. credits:        ~35
 ```
 Wait for "yes" before continuing.
 
@@ -68,14 +66,14 @@ Run the chosen action(s). Merge results, dedupe by `profile_url`. Drop:
 - The post author themselves
 - Profiles with missing `profile_url`
 
-Cost: ~1 credit per 10 engagers. Not counted against the 15-search cap.
+Not counted against the 15-search cap.
 
 ## Stage 2 — Pre-filter on visible signal (no enrichment yet)
 
 Each engager comes back with `name`, `headline`, sometimes `current_company`. Score each against the ICP using ONLY visible fields:
 
 - ✅ Clear match — headline mentions target role/industry → enqueue for enrichment
-- ❌ Clear mismatch → drop without burning a profile-get credit
+- ❌ Clear mismatch → drop without burning a profile-get
 - ⚠️ Ambiguous → enqueue if remaining profile-get budget allows
 
 Surface the triage:
@@ -133,7 +131,7 @@ Write `./campaigns/{YYYY-MM-DD}-high-intent-{post-slug}.md`:
 7. Daily caps remaining after this run
 8. Deferred prospects list (for tomorrow)
 
-Concise on-screen summary. Include `account_id`, credits consumed, `start_balance → end_balance`.
+Concise on-screen summary. Include `account_id` and daily-cap usage.
 
 ## De-dup with previous campaigns
 
@@ -149,11 +147,10 @@ Concise on-screen summary. Include `account_id`, credits consumed, `start_balanc
 
 ## Tool quick reference
 
-| Tool | Action | Cost | Daily cap |
-|---|---|---|---|
-| `linkedin_content` | `get_post_comments` / `get_post_reactions` | 1/10 | engagement (uncapped) |
-| `linkedin_profiles` | `get` | 1 | **100/day shared** |
-| `linkedin_network` | `check_invitation` | 1 | (pre-flight, no cap) |
-| `linkedin_network` | `invite` | 1 | **20/day** |
-| `linkupapi_get_logs` | — | 0 | run at Stage 0 |
-| `linkupapi_get_credits` | — | 0 | balance check |
+| Tool | Action | Daily cap |
+|---|---|---|
+| `linkedin_content` | `get_post_comments` / `get_post_reactions` | engagement (uncapped) |
+| `linkedin_profiles` | `get` | **100/day shared** |
+| `linkedin_network` | `check_invitation` | (pre-flight, no cap) |
+| `linkedin_network` | `invite` | **20/day** |
+| `linkupapi_get_logs` | — | run at Stage 0 |

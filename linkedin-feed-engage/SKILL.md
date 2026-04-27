@@ -9,8 +9,7 @@ The premise: commenting thoughtfully on a prospect's post before sending an invi
 
 ## Required prerequisites
 1. `linkupapi` MCP connected with at least one LinkedIn account (status `connected`).
-2. Credit balance ≥ 30.
-3. The user must already know their ICP — this skill is NOT a discovery tool, it filters an existing feed against a known ICP.
+2. The user must already know their ICP — this skill is NOT a discovery tool, it filters an existing feed against a known ICP.
 
 ## Daily LinkedIn safety caps (MANDATORY — enforced)
 
@@ -62,7 +61,7 @@ Then apply the topic filter on `post_text`:
 - KEEP if post_text contains any topic keyword (case-insensitive substring or semantic match)
 - If user provided no topic filter, skip this check
 
-Costs 0 credits.
+No tool calls at this stage — pure LLM judgment.
 
 ## Stage 3 — Enrich borderline authors (budget-aware)
 
@@ -133,9 +132,9 @@ When `linkedin-outreach` runs later this week and the prospect list overlaps wit
 
 ## Tool quick reference
 
-| Tool | Action | Cost | Daily cap |
-|---|---|---|---|
-| `linkedin_content` | `get_feed` | 1/10 results | — |
-| `linkedin_profiles` | `get` | 1 | **100/day shared** |
-| `linkedin_content` | `comment` / `post_comment` | 1 | **15/day (this skill)** |
-| `linkupapi_get_logs` | — | 0 | run at Stage 0 |
+| Tool | Action | Daily cap |
+|---|---|---|
+| `linkedin_content` | `get_feed` | — |
+| `linkedin_profiles` | `get` | **100/day shared** |
+| `linkedin_content` | `comment` / `post_comment` | **15/day (this skill)** |
+| `linkupapi_get_logs` | — | run at Stage 0 |

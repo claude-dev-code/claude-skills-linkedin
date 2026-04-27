@@ -5,7 +5,7 @@ description: Run a full LinkedIn outreach campaign via the LinkupAPI MCP — def
 
 # LinkedIn Outreach Campaign — LinkupAPI V2
 
-Use this skill to run cold-outreach campaigns on LinkedIn via the `linkupapi` MCP. It codifies the full prospecting → connect → follow-up playbook in 7 stages, with credit budgeting and false-positive filtering built in.
+Use this skill to run cold-outreach campaigns on LinkedIn via the `linkupapi` MCP. It codifies the full prospecting → connect → follow-up playbook in 7 stages, with rate-limit awareness and false-positive filtering built in.
 
 ## Required prerequisites — check before you start
 
@@ -13,8 +13,7 @@ Use this skill to run cold-outreach campaigns on LinkedIn via the `linkupapi` MC
    - If the list is **empty**, tell the user they have two options to connect a LinkedIn account, then stop and wait:
      - **Hosted UI** — open https://app.linkupapi.com/account-connection (fastest, handles checkpoints in-browser).
      - **MCP login** — run `linkupapi_login` directly (platform=linkedin, with email+password OR a `login_token`). On `checkpoint_required` → run `linkupapi_checkpoint`.
-2. Confirm credit balance with `linkupapi_get_credits`. A 50-prospect campaign typically costs **80–120 credits**. Refuse to start if balance < expected cost; show the user the math.
-3. If a webhook for the chosen account(s) doesn't exist with the `accepted_invitation` event, propose to create one (`linkupapi_create_webhook`) so accepts trigger automated follow-up.
+2. If a webhook for the chosen account(s) doesn't exist with the `accepted_invitation` event, propose to create one (`linkupapi_create_webhook`) so accepts trigger automated follow-up.
 
 ## Daily LinkedIn safety caps (MANDATORY — enforced before Stage 1)
 
@@ -47,7 +46,7 @@ If `linkupapi_get_logs` is unavailable or empty, fall back to scanning today's `
 
 ## Stage 0 — Discover intent, then derive the ICP, then validate
 
-**Don't run any MCP tool yet.** Stage 0 has three steps and is non-negotiable — it's what protects the user from a wasted 100-credit run on the wrong audience.
+**Don't run any MCP tool yet.** Stage 0 has three steps and is non-negotiable — it's what protects the user from a wasted run on the wrong audience.
 
 The skill does NOT start with company filters. It starts with **why** the user is doing outreach. The flow branches from there: a recruiter targets people directly, a salesperson targets companies first then decision makers, a networker targets people by topic/role.
 
@@ -181,8 +180,8 @@ The V2 exposes exactly **4 filters** on companies (this is the full list — the
 }
 ```
 
-- Cost: 1 credit per 10 results (so `limit=25` → 3 credits).
 - Pagination: `offset` + `limit` (preferred) or `start_page` + `end_page`.
+- Counts against the **15 searches / day** cap.
 - The result objects come back with `industry` and `location` split out (V2 post-processing splits `"industry • city"` into separate fields), so filtering in Stage 2 is straightforward.
 - Save the raw list, then in Stage 2 manually filter out **non-fits** (staffing agencies dressed as tech, pure consultancies, etc.).
 
@@ -245,7 +244,7 @@ For a standard outreach campaign, the high-precision combo is:
 
 ### Operational notes
 
-- Cost: ~1 credit per call regardless of result count (1 credit per 10 returned, ceiling).
+- Each `search_people` call counts against the **15 searches / day** cap.
 - Run calls **sequentially in a bash loop** (not parallel) with 1–2 sec sleeps. LinkedIn rate-limits bursts.
 - Profiles shown as `LinkedIn Member` are private/anonymous → discard. Their URL contains `/search/results/people/headless?...` not `/in/<handle>`.
 
@@ -263,7 +262,7 @@ Tool: `linkedin_profiles` action `get` with `params.identifier=<linkedin handle>
 }
 ```
 
-- Cost: 1 credit per profile.
+- Each `get` call counts against the **100 profile gets / day** cap.
 - For each enriched profile, parse `experience[0]` (the current job). **Keep only if** `experience[0].company` matches (or is similar to) the target company AND `experience[0].title` matches the persona titles.
 - Common false positives to drop:
   - Person now at a different company (LinkedIn tagged them due to past employment).
@@ -288,7 +287,6 @@ or
 }}
 ```
 
-- Cost: 1 credit per call.
 - Skip this step if pure LinkedIn outreach.
 
 ## Stage 6 — Pre-flight check & send invites
@@ -296,7 +294,7 @@ or
 Before sending **every** connection request, check the current relationship via `linkedin_network` action `check_invitation` to avoid:
 - Re-inviting someone already connected (1st degree)
 - Re-sending while a previous invitation is `PENDING`
-- Wasting credits on `OUT_OF_NETWORK` cases
+- Sending invites to `OUT_OF_NETWORK` profiles (rejected by LinkedIn anyway)
 
 ```json
 {
@@ -407,7 +405,7 @@ Profiles enriched:     {n}
 Decision makers:       {n_confirmed} (✅) / {n_false_pos} (❌)
 Skipped (already inv): {n}
 Invitations sent:      {n}
-Credits consumed:      {total} (start: {b0}, end: {b1})
+Daily caps remaining:  invites X / 20 · profiles Y / 100 · searches Z / 15
 Webhook armed:         yes/no
 ```
 
@@ -419,7 +417,7 @@ The log file MUST include:
 
 1. **ICP block** — every Stage 0 answer (goal, theme, sectors, sizes, geo, personas, volume, note style, message-after-accept).
 2. **Account(s) used** — id + email + country. If multiple accounts, list per-account assignment.
-3. **Funnel table** — counts and credit cost per stage.
+3. **Funnel table** — counts per stage.
 4. **Companies kept** (Stage 2) — names only, comma-joined.
 5. **Companies dropped** (Stage 2) — name + 1-line reason each.
 6. **False positives dropped pre-enrichment** (Stage 3 → 4) — name + reason.
@@ -435,45 +433,42 @@ When the user runs `/linkedin-outreach` again on the same account, **before Stag
 
 ## Common pitfalls
 
-- **Counting credits wrong** — `search_people` and `search_companies` are charged per page (10 results = 1 credit, ceiling). `get` and `invite` are 1 credit flat. Check `_credits_consumed` in every response.
 - **Inviting from `LinkedIn Member` URL** — those are anonymized, the URL contains `/search/results/people/headless?...` not `/in/<handle>`. The invite call will fail. Filter them in Stage 4.
 - **Trusting search_people's listed company** — always verify current role in Stage 4. ~30–50% of `search_people` results in larger companies are ex-employees.
 - **Sending invites in parallel** — LinkedIn rate-limits. Use a sequential loop with sleep.
 - **Greek/Cyrillic identifiers** — when the URL is URL-encoded (`https://www.linkedin.com/in/%CE%B4...`), pass the raw handle to `identifier`, not the URL.
-- **Forgetting to confirm ICP** — running a 50-credit campaign on the wrong persona is bad UX. Always echo the ICP in plain text and wait for "yes" before Stage 1.
+- **Forgetting to confirm ICP** — running a campaign on the wrong persona is bad UX. Always echo the ICP in plain text and wait for "yes" before Stage 1.
 
 ## Tool quick reference
 
-| What you want | Tool | Action | Cost |
+| What you want | Tool | Action | Daily cap |
 |---|---|---|---|
-| List my connected accounts | `linkupapi_list_accounts` | — | 0 |
-| Login to a new LinkedIn account | `linkupapi_login` / `linkupapi_checkpoint` | — | 1 each |
-| Check credits | `linkupapi_get_credits` | — | 0 |
-| Find target companies | `linkedin_profiles` | `search_companies` | 1/10 results |
-| Find people in a company | `linkedin_profiles` | `search_people` | 1/10 results |
-| Get full profile info | `linkedin_profiles` | `get` | 1 |
-| Find professional email | `linkupapi_enrich` | `find_email` | 1 |
-| Validate an email | `linkupapi_enrich` | `validate_email` | 1 |
-| Reverse email → person | `linkupapi_enrich` | `reverse_email` | 1 |
-| Check invitation status | `linkedin_network` | `check_invitation` | 1 |
-| Send connection request | `linkedin_network` | `invite` | 1 |
-| List sent invitations | `linkedin_network` | `list_sent` | 1/50 results |
-| Send a DM | `linkedin_messages` | `send` | 1 (+1 if media) |
-| Create webhook | `linkupapi_create_webhook` | — | 0 |
-| Poll webhook events | `linkupapi_get_webhook_events` | — | 0 |
+| List my connected accounts | `linkupapi_list_accounts` | — | — |
+| Login to a new LinkedIn account | `linkupapi_login` / `linkupapi_checkpoint` | — | — |
+| Find target companies | `linkedin_profiles` | `search_companies` | **15/day shared** |
+| Find people in a company | `linkedin_profiles` | `search_people` | **15/day shared** |
+| Get full profile info | `linkedin_profiles` | `get` | **100/day shared** |
+| Find professional email | `linkupapi_enrich` | `find_email` | — |
+| Validate an email | `linkupapi_enrich` | `validate_email` | — |
+| Reverse email → person | `linkupapi_enrich` | `reverse_email` | — |
+| Check invitation status | `linkedin_network` | `check_invitation` | — |
+| Send connection request | `linkedin_network` | `invite` | **20/day** |
+| List sent invitations | `linkedin_network` | `list_sent` | — |
+| Send a DM | `linkedin_messages` | `send` | — |
+| Create webhook | `linkupapi_create_webhook` | — | — |
+| Poll webhook events | `linkupapi_get_webhook_events` | — | — |
+| Check daily usage | `linkupapi_get_logs` | — | run at Stage 0 |
 
-## Default campaign template (50 prospects, no note)
+## Default campaign template
 
 ```
-Stage 0 → confirm ICP with user
-Stage 1 → search_companies (limit=25, ~3 credits)
+Stage 0 → confirm ICP with user + daily-cap budget check
+Stage 1 → search_companies (counts against searches/day cap)
 Stage 2 → LLM filter to ~12-18 real fits
-Stage 3 → search_people on each (~12-18 credits)
-Stage 4 → get on every candidate (~40-60 credits)
+Stage 3 → search_people on each (counts against searches/day cap)
+Stage 4 → get on every candidate (counts against profiles/day cap)
 Stage 5 → skip (LinkedIn-only campaign)
-Stage 6 → check_invitation + invite on confirmed targets (~50-70 credits)
+Stage 6 → check_invitation + invite on confirmed targets (counts against invites/day cap)
 Stage 7 → ensure webhook is armed
-Stage 8 → report
-
-Total budget: ~110-150 credits for ~30-40 sent invites.
+Stage 8 → report + persist log
 ```
