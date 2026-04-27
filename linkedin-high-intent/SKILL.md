@@ -7,9 +7,14 @@ description: Find high-intent leads from a LinkedIn post — scrape commenters a
 
 The premise: people who comment or react on a relevant post are 5-10× more likely to accept a connection or reply than cold outreach. This skill turns a single post URL into a filtered, ICP-matched outreach campaign.
 
-## Required prerequisites
-1. `linkupapi` MCP connected with at least one LinkedIn account (status `connected`). Verify with `linkupapi_list_accounts`.
-2. A LinkedIn post URL the user wants to mine.
+## Required prerequisites — check before you start
+
+1. **`linkupapi` MCP connected.** Verify with `linkupapi_list_accounts`.
+   - If the list is **empty**, tell the user they have two options to connect a LinkedIn account, then stop and wait:
+     - **Hosted UI** — open https://app.linkupapi.com/account-connection (fastest, handles checkpoints in-browser).
+     - **MCP login** — run `linkupapi_login` directly (platform=linkedin, with email+password OR a `login_token`). On `checkpoint_required` → run `linkupapi_checkpoint`.
+2. **Pick the sending account** before Stage 1. After confirming at least one `status = connected` account exists, present the connected accounts via `AskUserQuestion` (single-select). Each option label is the account display name; description shows email + country. The chosen `account_id` is used for every subsequent tool call in this run.
+3. A LinkedIn post URL the user wants to mine.
 
 ## Daily LinkedIn safety caps (MANDATORY — enforced before any tool call)
 

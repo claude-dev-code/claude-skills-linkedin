@@ -7,9 +7,14 @@ description: Auto-comment on LinkedIn posts authored by your ICP — scroll the 
 
 The premise: commenting thoughtfully on a prospect's post before sending an invite raises accept rate by 30-50%. They've seen your name and read something useful from you. This skill scrolls your LinkedIn feed, identifies posts authored by ICP-matching profiles, and posts a value-adding comment on each.
 
-## Required prerequisites
-1. `linkupapi` MCP connected with at least one LinkedIn account (status `connected`).
-2. The user must already know their ICP — this skill is NOT a discovery tool, it filters an existing feed against a known ICP.
+## Required prerequisites — check before you start
+
+1. **`linkupapi` MCP connected.** Verify with `linkupapi_list_accounts`.
+   - If the list is **empty**, tell the user they have two options to connect a LinkedIn account, then stop and wait:
+     - **Hosted UI** — open https://app.linkupapi.com/account-connection (fastest, handles checkpoints in-browser).
+     - **MCP login** — run `linkupapi_login` directly (platform=linkedin, with email+password OR a `login_token`). On `checkpoint_required` → run `linkupapi_checkpoint`.
+2. **Pick the sending account** before Stage 1. After confirming at least one `status = connected` account exists, present the connected accounts via `AskUserQuestion` (single-select). Each option label is the account display name; description shows email + country. The chosen `account_id` is the one whose feed will be scrolled and that will post the comments.
+3. The user must already know their ICP — this skill is NOT a discovery tool, it filters an existing feed against a known ICP.
 
 ## Daily LinkedIn safety caps (MANDATORY — enforced)
 
