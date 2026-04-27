@@ -225,13 +225,15 @@ For a standard outreach campaign, the high-precision combo is:
   "account_id": "...",
   "action": "search_people",
   "params": {
-    "company_url": ["<company linkedin url>"],
+    "company_url": ["<exact company_url returned by Stage 1>"],
     "title": ["CEO", "CTO", "Co-Founder", "Founder"],
     "network": "S",
     "limit": 5
   }
 }
 ```
+
+> **CRITICAL — never fabricate `company_url`.** Use the exact `company_url` value LinkupAPI returned in Stage 1 (`search_companies` results). Do NOT guess or build one from the company name (e.g. inferring `linkedin.com/company/acme/` from "Acme Inc" — slugs often differ: `acme-corp`, `acme-io`, `acme-tech`). A fabricated URL silently returns 0 results or worse, employees of a different company with a colliding slug. Always copy the URL field from the Stage 1 result object verbatim.
 
 `network: "S"` (2nd degree) is gold — these people share at least one mutual connection with the user, which dramatically boosts accept rate (LinkedIn shows the mutual on the invite). Drop `network` only if the user wants 3rd-degree volume.
 
@@ -433,6 +435,7 @@ When the user runs `/linkedin-outreach` again on the same account, **before Stag
 
 ## Common pitfalls
 
+- **Fabricating `company_url` in Stage 3** — never construct a LinkedIn company URL from the company name. Always reuse the exact `company_url` returned by Stage 1's `search_companies`. Slugs are unpredictable (`acme-corp` vs `acme-io` vs `acme-tech`); a guessed URL returns 0 results or worse, employees of a different company.
 - **Inviting from `LinkedIn Member` URL** — those are anonymized, the URL contains `/search/results/people/headless?...` not `/in/<handle>`. The invite call will fail. Filter them in Stage 4.
 - **Trusting search_people's listed company** — always verify current role in Stage 4. ~30–50% of `search_people` results in larger companies are ex-employees.
 - **Sending invites in parallel** — LinkedIn rate-limits. Use a sequential loop with sleep.
