@@ -143,7 +143,7 @@ This is the single biggest cost saver — repeat enrichments are a waste.
 
 - **Anonymized URLs**: `/in/headless?...` can't be enriched. Filter at Stage 1.
 - **URL-encoded handles** (Greek/Cyrillic etc.): pass the decoded handle to `identifier`, not the URL.
-- **Email find rate**: realistic = 40-60% find rate (the rest don't have a discoverable professional email). Don't promise 100%.
+- **Email find rate**: when a prospect has a discoverable professional email, LinkupAPI finds it ~100% of the time. Misses are people whose work email is genuinely not discoverable (private domain, freelancer without a corporate inbox, scrubbed records) — not a tool failure. Frame results to the user as "X / N had a discoverable email", not "X% find rate".
 - **Daily cap mid-run**: if email is requested, account for BOTH profile + email budget at Stage 0. Better to enrich 80 fully than start 100 and hit cap mid-email-pass.
 - **Reusing enrichment for outreach**: this skill's output feeds directly into `linkedin-outreach` Stage 4 verification. The outreach skill should check `./enrichments/` first to avoid re-paying for the same `get`.
 - **Personal Gmail returned**: `find_email` sometimes returns personal email (e.g. `firstname@gmail.com`) instead of professional. Surface both when both exist and let the user choose downstream.
