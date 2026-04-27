@@ -6,7 +6,7 @@
 
 ## What it does
 
-This is a **Claude Code skill** that turns the [LinkUp API](https://linkupapi.com) MCP into a guided LinkedIn prospecting workflow. When you type `/linkedin-outreach`, Claude:
+This is a **Claude Code skill** that turns the [LinkupAPI](https://linkupapi.com) MCP into a guided LinkedIn prospecting workflow. When you type `/linkedin-outreach`, Claude:
 
 1. Pops a structured ICP form (theme, persona, geo, company size, volume, note style, follow-up).
 2. Searches LinkedIn for matching companies (`linkedin_profiles.search_companies`, all 4 V2 filters as JSON arrays).
@@ -38,17 +38,9 @@ This is a **Claude Code skill** that turns the [LinkUp API](https://linkupapi.co
 
 ## Install
 
-### One-shot installer
-
 ```bash
-curl -fsSL https://raw.githubusercontent.com/claude-dev-code/claude-linkedin-skills/main/install.sh | bash
-```
-
-### Manual install
-
-```bash
-git clone https://github.com/claude-dev-code/claude-linkedin-skills.git
-cp -r claude-linkedin-skills/linkedin-outreach ~/.claude/skills/
+git clone https://github.com/claude-dev-code/claude-skills-linkedin.git
+cp -r claude-skills-linkedin/linkedin-outreach ~/.claude/skills/
 ```
 
 Then restart Claude Code.
@@ -58,7 +50,7 @@ Then restart Claude Code.
 The `linkupapi` MCP server must be connected:
 
 ```bash
-claude mcp add --transport sse linkupapi https://mcp.linkupapi.com/sse \
+claude mcp add --transport http linkupapi https://mcp.linkupapi.com/mcp \
   --header "x-api-key: YOUR_LINKUP_API_KEY"
 ```
 
@@ -96,14 +88,10 @@ Hard limit is enforced at **80 invites per session** to stay under LinkedIn's we
 
 The 8-stage operational playbook (with all V2 params, JSON examples, message templates, and common pitfalls) lives in [SKILL.md](./SKILL.md) — that's the file Claude Code loads.
 
-## Related skills
+## Related skills (in this repo)
 
-- `linkedin-engagement` — warm-up campaign (likes/comments on ICP posts before invite) — *coming soon*
-- `email-finder-bulk` — parallel email-channel outreach with `linkupapi_enrich.find_email` — *coming soon*
-- `recruiting-pipeline` — full recruiter funnel (search jobs → get_candidates → enrich → outreach) — *coming soon*
+- [`linkedin-high-intent`](../linkedin-high-intent) — scrape commenters/reactors of a post, score against ICP, invite the matches
+- [`linkedin-feed-engage`](../linkedin-feed-engage) — auto-comment on ICP feed before sending invites (warm-up play)
+- [`linkedin-enrich`](../linkedin-enrich) — bulk URL → profile + email enrichment
 
-[← All Claude LinkedIn Skills](../README.md)
-
-## License
-
-MIT — see [LICENSE](../LICENSE).
+[← All LinkupAPI Claude Skills](../README.md)

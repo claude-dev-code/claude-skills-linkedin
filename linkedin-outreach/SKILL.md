@@ -1,9 +1,9 @@
 ---
 name: linkedin-outreach
-description: Run a full LinkedIn outreach campaign via the LinkUp API MCP — define an ICP (Ideal Customer Profile), find target companies, extract real decision makers (CEO/CTO/Founder), filter false positives, send connection requests, and set up automated follow-up via webhooks. Use when the user says "outreach campaign", "prospect on LinkedIn", "find decision makers", "send connection requests", "build a target list", "campaign LinkedIn", "lead generation", "ICP", "target CEO/CTO", or describes a B2B outreach goal. Requires the `linkupapi` MCP server to be connected with at least one LinkedIn account (status `connected`).
+description: Run a full LinkedIn outreach campaign via the LinkupAPI MCP — define an ICP (Ideal Customer Profile), find target companies, extract real decision makers (CEO/CTO/Founder), filter false positives, send connection requests, and set up automated follow-up via webhooks. Use when the user says "outreach campaign", "prospect on LinkedIn", "find decision makers", "send connection requests", "build a target list", "campaign LinkedIn", "lead generation", "ICP", "target CEO/CTO", or describes a B2B outreach goal. Requires the `linkupapi` MCP server to be connected with at least one LinkedIn account (status `connected`).
 ---
 
-# LinkedIn Outreach Campaign — LinkUp API V2
+# LinkedIn Outreach Campaign — LinkupAPI V2
 
 Use this skill to run cold-outreach campaigns on LinkedIn via the `linkupapi` MCP. It codifies the full prospecting → connect → follow-up playbook in 7 stages, with credit budgeting and false-positive filtering built in.
 
