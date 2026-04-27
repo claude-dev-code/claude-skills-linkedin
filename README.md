@@ -3,7 +3,7 @@
 > **Connect your AI Agent to B2B Channels.**
 > Powered by [LinkupAPI](https://app.linkupapi.com) — a unified API that lets agents act on the channels where B2B revenue actually happens. Today: full LinkedIn coverage (outbound, engagement, content, recruiter, enrichment, webhooks). More channels are landing on the same action-based interface.
 
-This repo is the official bundle of **Claude skills for LinkedIn**: 4 ready-to-run, auditable Claude Code workflows that turn LinkupAPI's capabilities into safe, rate-limit-aware automation. The fastest way to put an AI agent on a real LinkedIn account without writing glue code.
+This repo is a bundle of **Claude skills for LinkedIn**: 4 ready-to-run, auditable Claude Code workflows that turn LinkupAPI's capabilities into safe, rate-limit-aware automation. The fastest way to put an AI agent on a real LinkedIn account without writing glue code.
 
 **Keywords**: claude skills for linkedin · claude code linkedin · linkedin automation claude · claude agent linkedin · linkupapi mcp · linkedin outreach AI agent.
 
@@ -45,15 +45,17 @@ Restart Claude Code. The skills are auto-discovered and triggered by natural-lan
 
 ## Connect the LinkupAPI MCP server
 
-All 4 skills require the LinkupAPI MCP server with at least one channel account in `connected` status. Sign up at [app.linkupapi.com](https://app.linkupapi.com) to get your API key and connect an account (LinkedIn today; more channels rolling out).
+All 4 skills require the LinkupAPI MCP server with at least one channel account in `connected` status.
 
-In Claude Code:
+In Claude Code, just register the MCP URL — no API key flag needed, the server handles auth via OAuth:
+
 ```bash
-claude mcp add --transport http linkupapi https://mcp.linkupapi.com/mcp \
-  --header "x-api-key: YOUR_API_KEY"
+claude mcp add --transport http linkupapi https://mcp.linkupapi.com/mcp
 ```
 
-The remote MCP server runs OAuth 2.1 + HTTP streamable transport. After registration, Claude Code redirects you to the LinkupAPI dashboard for one-click consent.
+Then run `/mcp` in Claude Code and follow the redirect to the LinkupAPI dashboard. One-click consent issues the OAuth token; the connection is then live for the rest of the session and persisted across restarts.
+
+If you don't have an account yet, the consent page will let you sign up before approving.
 
 ## Cross-skill data flow
 

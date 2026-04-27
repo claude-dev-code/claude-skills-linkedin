@@ -47,14 +47,13 @@ Then restart Claude Code.
 
 ## Prerequisites
 
-The `linkupapi` MCP server must be connected:
+The `linkupapi` MCP server must be connected. Just add the URL — the server handles auth via OAuth:
 
 ```bash
-claude mcp add --transport http linkupapi https://mcp.linkupapi.com/mcp \
-  --header "x-api-key: YOUR_LINKUP_API_KEY"
+claude mcp add --transport http linkupapi https://mcp.linkupapi.com/mcp
 ```
 
-Get your API key at [app.linkupapi.com](https://app.linkupapi.com). At least one LinkedIn account must be connected (the skill will guide you through `linkupapi_login` if not).
+Then run `/mcp` in Claude Code and follow the redirect to consent. At least one LinkedIn account must be connected on your LinkupAPI account (the skill will guide you through `linkupapi_login` if not).
 
 ## Run it
 
