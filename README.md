@@ -36,6 +36,8 @@ The cap is **shared across all 4 skills** — hitting it from any one carries ov
 
 ## Installation
 
+### Claude Code (CLI / IDE)
+
 ```bash
 git clone https://github.com/claude-dev-code/claude-skills-linkedin /tmp/claude-skills-linkedin
 cp -R /tmp/claude-skills-linkedin/linkedin-* ~/.claude/skills/
@@ -43,19 +45,29 @@ cp -R /tmp/claude-skills-linkedin/linkedin-* ~/.claude/skills/
 
 Restart Claude Code. The skills are auto-discovered and triggered by natural-language prompts: "outreach campaign", "enrich these profiles", "comment on my feed", "find leads from this post URL", etc.
 
+### Claude Desktop / Claude.ai (web)
+
+Each skill is also published as a `.zip` artifact on the [latest GitHub release](https://github.com/claude-dev-code/claude-skills-linkedin/releases/latest). To install:
+
+1. Download the zip(s) you want — one per skill: `linkedin-outreach.zip`, `linkedin-high-intent.zip`, `linkedin-feed-engage.zip`, `linkedin-enrich.zip`.
+2. In Claude Desktop or claude.ai, go to **Settings → Skills → Upload skill** and drop the zip.
+3. The skill becomes available across all your projects/conversations.
+
+The MCP setup is the same on all three surfaces — see below.
+
 ## Connect the LinkupAPI MCP server
 
-All 4 skills require the LinkupAPI MCP server with at least one channel account in `connected` status.
+All 4 skills require the LinkupAPI MCP server with at least one channel account in `connected` status. The auth is OAuth — no API key in headers, no token to manage.
 
-In Claude Code, just register the MCP URL — no API key flag needed, the server handles auth via OAuth:
-
+**Claude Code**:
 ```bash
 claude mcp add --transport http linkupapi https://mcp.linkupapi.com/mcp
 ```
+Then run `/mcp` and follow the redirect to consent.
 
-Then run `/mcp` in Claude Code and follow the redirect to the LinkupAPI dashboard. One-click consent issues the OAuth token; the connection is then live for the rest of the session and persisted across restarts.
+**Claude Desktop / Claude.ai**: Settings → **Connectors** → **Add custom connector** → URL = `https://mcp.linkupapi.com/mcp`. Click Connect, approve on the LinkupAPI consent page.
 
-If you don't have an account yet, the consent page will let you sign up before approving.
+If you don't have a LinkupAPI account yet, the consent page will let you sign up before approving.
 
 ## Cross-skill data flow
 
